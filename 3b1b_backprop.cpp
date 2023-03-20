@@ -42,7 +42,7 @@ void Generate(size_t& n1, size_t& n2)
 
 void GenerateRandom(std::vector<float>& input, std::vector<float>& result)
 {
-	int x = int(rand() % 1000) - 500;
+	int x = int(rand() % 10'000) - 5'000;
 	int y;
 	if (rand() % 2)
 	{
@@ -65,12 +65,12 @@ int main()
 	auto count = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	srand((uint32_t)count);
 
-	Network network{ {2,25,25,2} };
+	Network network{ {2,3,2} };
 
 	float cost = 1.0f;
-	size_t batchSize = 500;
+	size_t batchSize = 2000;
 	size_t printEveryNBatches = 20;
-	float learningRate = 1.0f;
+	float learningRate = 10.0f;
 
 	while (cost > 0.003f)
 	{
@@ -87,7 +87,7 @@ int main()
 				cost += network.BackPropagate(in, out);
 			}
 			network.ConsumeDelta(learningRate);
-			learningRate = std::max(0.1f, learningRate * 0.999f);
+			learningRate = std::max(0.01f, learningRate * 0.999f);
 		}
 
 

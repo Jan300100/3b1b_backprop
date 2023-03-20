@@ -33,5 +33,5 @@ private:
 	std::vector<LayerBase*> m_layers;
 	std::vector<Parameters> m_storedDelta;
 
-	size_t m_numStored;
+	size_t m_numStored = 0;
 };

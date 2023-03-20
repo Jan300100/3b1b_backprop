@@ -5,9 +5,6 @@
 Network::Network(std::vector<size_t> neuronsPerLayer, bool zeroInit)
 {
 	m_initialLayer = new InitialLayer{ neuronsPerLayer[0] };
-
-	m_numStored = 1;
-
 	m_layers.push_back(m_initialLayer);
 	m_storedDelta.push_back(Parameters{ m_initialLayer->GetNumNeurons(), m_initialLayer->GetNumWeightsToPrevious(), true });
 
@@ -52,24 +49,18 @@ void Network::ConsumeDelta(float learningRate)
 {
 	if (m_layers.size() == m_storedDelta.size())
 	{
-		// no need to update first layer
 		for (size_t i = 1; i < m_layers.size(); i++)
 		{
-			if (m_layers[i]->m_params.biases.size() == m_storedDelta[i].biases.size())
+			if (m_layers[i]->m_params.biases.size() == m_storedDelta[i].biases.size()
+				&& m_layers[i]->m_params.weights.size() == m_storedDelta[i].weights.size())
 			{
-				for (size_t j = 0; j < m_layers[i]->m_params.biases.size(); j++)
-				{
-					m_layers[i]->m_params.biases[j] -= (learningRate * m_storedDelta[i].biases[j]) / m_numStored;
-					m_storedDelta[i].biases[j] = 0.0f;
-				}
-			}
-			if (m_layers[i]->m_params.weights.size() == m_storedDelta[i].weights.size())
-			{
-				for (size_t j = 0; j < m_layers[i]->m_params.weights.size(); j++)
-				{
-					m_layers[i]->m_params.weights[j] -= (learningRate * m_storedDelta[i].weights[j]) / m_numStored;
-					m_storedDelta[i].weights[j] = 0.0f;
-				}
+				// average = divide by numStored
+				// apply learning rate
+				// negative because we want to substract. (inverse of the gradient)
+
+				m_storedDelta[i] *= -1.0f*(learningRate / m_numStored);
+				m_layers[i]->m_params += m_storedDelta[i];
+				m_storedDelta[i].Clear();
 			}
 		}
 

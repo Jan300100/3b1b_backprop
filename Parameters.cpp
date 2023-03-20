@@ -35,3 +35,22 @@ Parameters& Parameters::operator+=(const Parameters& other)
 
 	return *this;
 }
+
+Parameters& Parameters::operator*=(float other)
+{
+	for (size_t j = 0; j < biases.size(); j++)
+	{
+		biases[j] *= other;
+	}
+	for (size_t j = 0; j < weights.size(); j++)
+	{
+		weights[j] *= other;
+	}
+
+	return *this;
+}
+
+void Parameters::Clear()
+{
+	(*this) *= 0.0f;
+}
