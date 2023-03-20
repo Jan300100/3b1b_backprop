@@ -42,8 +42,8 @@ void Generate(size_t& n1, size_t& n2)
 
 void GenerateRandom(std::vector<float>& input, std::vector<float>& result)
 {
-	int x = int(rand() % 10'000) - 5'000;
-	int y;
+	float x = float((rand() % 1'000'000) - 500'000.0f) / 100.0f;
+	float y;
 	if (rand() % 2)
 	{
 		result.push_back(0);
@@ -56,8 +56,8 @@ void GenerateRandom(std::vector<float>& input, std::vector<float>& result)
 		result.push_back(0);
 		y = 2*x;
 	}
-	input.push_back((float)x);
-	input.push_back((float)y);
+	input.push_back(x);
+	input.push_back(y);
 }
 
 int main()
@@ -68,11 +68,11 @@ int main()
 	Network network{ {2,3,2} };
 
 	float cost = 1.0f;
-	size_t batchSize = 2000;
-	size_t printEveryNBatches = 20;
+	size_t batchSize = 200;
+	size_t printEveryNBatches = 100;
 	float learningRate = 10.0f;
 
-	while (cost > 0.003f)
+	while (cost > 0.00001f)
 	{
 		cost = 0.0f;
 
@@ -87,7 +87,7 @@ int main()
 				cost += network.BackPropagate(in, out);
 			}
 			network.ConsumeDelta(learningRate);
-			learningRate = std::max(0.01f, learningRate * 0.999f);
+			learningRate = std::max(0.01f, learningRate * 0.99999f);
 		}
 
 
@@ -101,8 +101,8 @@ int main()
 
 	while (true)
 	{
-		int x;
-		int y;
+		float x;
+		float y;
 		std::cin >> x >> y;
 
 		auto result = network.Propagate({ float(x),float(y) });

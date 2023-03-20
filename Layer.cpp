@@ -66,6 +66,7 @@ void InitialLayer::StartPropagation(std::vector<float> inputActivation)
 	if (inputActivation.size() == m_numNeurons)
 	{
 		m_activations = std::move(inputActivation);
+		m_preProcessedActivations = m_activations;
 		Propagate();
 	}
 }
