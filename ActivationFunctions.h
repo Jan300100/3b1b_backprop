@@ -37,7 +37,7 @@ public:
 	}
 };
 
-class SoftMax : public ActivationFunction
+class ReLu : public ActivationFunction
 {
 public:
 	virtual float Execute(float x) const override
@@ -50,15 +50,25 @@ public:
 	}
 };
 
-class ReLu : public ActivationFunction
+class LeakyReLu : public ActivationFunction
 {
+	static constexpr float leakySlope = 0.1f;
 public:
 	virtual float Execute(float x) const override
 	{
+		if (x >= 0.0f)
+		{
+			return x;
+		}
+		else
+		{
+			return x * leakySlope;
+		}
+
 		return std::max(0.0f, x);
 	}
 	virtual float ExecuteDerivative(float x) const override
 	{
-		return x > 0;
+		return x >= 0 ? 1 : leakySlope;
 	}
 };
