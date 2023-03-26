@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <memory>
 #include "Parameters.h"
 
 class ActivationFunction;
@@ -10,6 +11,7 @@ public:
 	LayerBase(size_t numNeurons, ActivationFunction* func, LayerBase* previousLayer = nullptr);
 	virtual ~LayerBase() = default;
 
+	void SetParams(const Parameters& params);
 
 	size_t GetNumNeurons() const
 	{
@@ -52,9 +54,8 @@ class Layer : public LayerBase
 {
 public:
 	Layer(size_t numNeurons, LayerBase* previousLayer = nullptr);
-	virtual ~Layer();
 private:
-	ActFunc* m_actFunc;
+	std::unique_ptr<ActFunc> m_actFunc;
 };
 
 template<typename ActFunc>
@@ -62,11 +63,5 @@ inline Layer<ActFunc>::Layer(size_t numNeurons, LayerBase* previousLayer)
 	:LayerBase(numNeurons, new ActFunc{}, previousLayer)
 {
 	// take ownership of activationFunc;
-	m_actFunc = dynamic_cast<ActFunc*>(m_activationFunction);
-}
-
-template<typename ActFunc>
-inline Layer<ActFunc>::~Layer()
-{
-	delete m_actFunc;
+	m_actFunc = std::unique_ptr<ActFunc>(static_cast<ActFunc*>(m_activationFunction));
 }

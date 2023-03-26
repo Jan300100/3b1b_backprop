@@ -4,30 +4,13 @@
 
 Network::Network(std::vector<size_t> neuronsPerLayer, bool zeroInit)
 {
-	m_initialLayer = new InitialLayer{ neuronsPerLayer[0] };
-	m_layers.push_back(m_initialLayer);
-	m_storedDelta.push_back(Parameters{ m_initialLayer->GetNumNeurons(), m_initialLayer->GetNumWeightsToPrevious(), true });
+	m_layers.push_back(std::make_unique<InitialLayer>(neuronsPerLayer[0]));
+	m_storedDelta.push_back(Parameters{ m_layers.front()->GetNumNeurons(), m_layers.front()->GetNumWeightsToPrevious(), true });
 
 	for (size_t i = 1; i < neuronsPerLayer.size(); i++)
 	{
-		if (i < (neuronsPerLayer.size() - 1))
-		{
-			m_layers.push_back(new Layer<Sigmoid>{ neuronsPerLayer[i], m_layers.back() });
-		}
-		else
-		{
-			m_layers.push_back(new Layer<Sigmoid>{ neuronsPerLayer[i], m_layers.back() });
-		}
-
+		m_layers.push_back(std::make_unique<Layer<Sigmoid>>(neuronsPerLayer[i], m_layers.back().get()));
 		m_storedDelta.push_back(Parameters{ m_layers.back()->GetNumNeurons(), m_layers.back()->GetNumWeightsToPrevious() ,true });
-	}
-}
-
-Network::~Network()
-{
-	for (LayerBase* l : m_layers)
-	{
-		delete l;
 	}
 }
 
@@ -43,6 +26,11 @@ void Network::StoreDelta(const std::vector<Parameters>& other)
 
 		m_numStored++;
 	}
+}
+
+InitialLayer& Network::GetInitialLayer()
+{
+	return *static_cast<InitialLayer*>(m_layers.front().get());
 }
 
 void Network::ConsumeDelta(float learningRate)
@@ -68,6 +56,16 @@ void Network::ConsumeDelta(float learningRate)
 	}
 }
 
+std::string Network::Serialize()
+{
+	return std::string();
+}
+
+void Network::Deserialize(const std::string& inString)
+{
+
+}
+
 float Network::CalculateCost(std::vector<float> inputActivation, std::vector<float> preferredOutput)
 {
 	const std::vector<float>& result = Propagate(inputActivation);
@@ -87,7 +85,7 @@ float Network::CalculateCost(std::vector<float> inputActivation, std::vector<flo
 
 std::vector<float> Network::Propagate(std::vector<float> inputActivation)
 {
-	m_initialLayer->StartPropagation(inputActivation);
+	GetInitialLayer().StartPropagation(inputActivation);
 	return m_layers.back()->m_activations;
 }
 
@@ -99,10 +97,10 @@ float Network::BackPropagate(std::vector<float> inputActivation, std::vector<flo
 	// create empty network with same dimensions to store deltas. 
 	std::vector<Parameters> deltaParameters;
 	deltaParameters.resize(m_layers.size());
-	deltaParameters.front() = Parameters{ m_initialLayer->GetNumNeurons(), m_initialLayer->GetNumWeightsToPrevious(), true };
+	deltaParameters.front() = Parameters{GetInitialLayer().GetNumNeurons(), GetInitialLayer().GetNumWeightsToPrevious(), true };
 
 	// propagate backwards
-	LayerBase* layer = m_layers.back();
+	LayerBase* layer = m_layers.back().get();
 	std::vector<float> prevLayerCostDeltas;
 	prevLayerCostDeltas.resize(layer->m_numNeurons);
 	for (size_t i = 0; i < layer->m_numNeurons; i++)

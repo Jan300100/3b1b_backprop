@@ -1,12 +1,12 @@
 #pragma once
 #include <vector>
+#include <memory>
+#include "Serializable.h"
 #include "Parameters.h"
+#include "Layer.h"
 
-class LayerBase;
-class InitialLayer;
-class ActivationFunction;
-
-class Network
+// loss func, initialization func, layers<numNodes, actFunc>
+class Network : public Serializable
 {
 public:
 	Network(std::vector<size_t> neuronsPerLayer, bool zeroInit = false);
@@ -14,7 +14,6 @@ public:
 	Network(Network&&) = delete;
 	Network& operator=(Network&) = delete;
 	Network& operator=(Network&&) = delete;
-	~Network();
 
 	float CalculateCost(std::vector<float> inputActivation, std::vector<float> preferredOutput);
 	std::vector<float> Propagate(std::vector<float> inputActivation);
@@ -24,13 +23,15 @@ public:
 
 	void ConsumeDelta(float learningRate);
 
+	// Inherited via Serializable
+	virtual std::string Serialize() override;
+	virtual void Deserialize(const std::string& inString) override;
+
 private:
 	void StoreDelta(const std::vector<Parameters>& other);
-
+	InitialLayer& GetInitialLayer();
 private:
-	InitialLayer* m_initialLayer;
-
-	std::vector<LayerBase*> m_layers;
+	std::vector<std::unique_ptr<LayerBase>> m_layers;
 	std::vector<Parameters> m_storedDelta;
 
 	size_t m_numStored = 0;

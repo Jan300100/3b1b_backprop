@@ -99,6 +99,8 @@ int main()
 			<< '\n';
 	}
 
+	//network.Serialize();
+
 	while (true)
 	{
 		float x;
@@ -112,10 +114,4 @@ int main()
 		}
 		std::cout << std::endl;
 	}
-	//auto result = network.Propagate({ 0,1,0,1,0,0 });
-	//for (float activation : result)
-	//{
-	//	std::cout << activation << " ";
-	//}
-	//std::cout << std::endl;
 }

@@ -19,6 +19,11 @@ LayerBase::LayerBase(size_t numNeurons, ActivationFunction* func, LayerBase* pre
 	m_params = Parameters{ numNeurons, numWeightsToEachNeuron * numNeurons, false };
 }
 
+void LayerBase::SetParams(const Parameters& params)
+{
+	m_params = params;
+}
+
 void LayerBase::Propagate()
 {
 	// We need previousLayer to work

@@ -41,5 +41,11 @@
     <ClInclude Include="Parameters.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Serializable.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ActFuncDataBase.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
