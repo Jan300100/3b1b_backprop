@@ -1,6 +1,6 @@
 #include "Network.h"
 #include "Layer.h"
-#include "ActivationFunctions.h"
+#include "ActFuncDataBase.h"
 
 Network::Network(std::vector<size_t> neuronsPerLayer, bool zeroInit)
 {
@@ -9,7 +9,8 @@ Network::Network(std::vector<size_t> neuronsPerLayer, bool zeroInit)
 
 	for (size_t i = 1; i < neuronsPerLayer.size(); i++)
 	{
-		m_layers.push_back(std::make_unique<Layer<Sigmoid>>(neuronsPerLayer[i], m_layers.back().get()));
+		ActFunc::Base* actFunc = ActFunc::DataBase::FindActFunc<ActFunc::Sigmoid>();
+		m_layers.push_back(std::make_unique<Layer>(neuronsPerLayer[i], actFunc, m_layers.back().get()));
 		m_storedDelta.push_back(Parameters{ m_layers.back()->GetNumNeurons(), m_layers.back()->GetNumWeightsToPrevious() ,true });
 	}
 }
@@ -100,7 +101,7 @@ float Network::BackPropagate(std::vector<float> inputActivation, std::vector<flo
 	deltaParameters.front() = Parameters{GetInitialLayer().GetNumNeurons(), GetInitialLayer().GetNumWeightsToPrevious(), true };
 
 	// propagate backwards
-	LayerBase* layer = m_layers.back().get();
+	Layer* layer = m_layers.back().get();
 	std::vector<float> prevLayerCostDeltas;
 	prevLayerCostDeltas.resize(layer->m_numNeurons);
 	for (size_t i = 0; i < layer->m_numNeurons; i++)

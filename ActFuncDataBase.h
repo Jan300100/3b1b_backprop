@@ -1,11 +1,28 @@
 #pragma once
 #include <string>
-
+#include <memory>
+#include <map>
 #include "ActivationFunctions.h"
 
-class ActFuncDataBase
+namespace ActFunc
 {
+	class DataBase
+	{
+		static DataBase* m_instance;
+		std::map<std::string, std::unique_ptr<Base>> m_map;
 
-public:
-	ActivationFunction* FindActFunc(const std::string& name);
-};
+		static DataBase* GetOrCreateInstance();
+	public:
+		static Base* FindActFunc(const std::string& name);
+
+		template <typename Imp>
+		static Base* FindActFunc();
+	};
+
+	template<typename Imp>
+	inline Base* DataBase::FindActFunc()
+	{
+		return DataBase::FindActFunc(Imp::k_name);
+	}
+
+}

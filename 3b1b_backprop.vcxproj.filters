@@ -27,6 +27,9 @@
     <ClCompile Include="Parameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ActFuncDataBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Layer.h">

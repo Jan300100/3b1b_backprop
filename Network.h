@@ -5,7 +5,6 @@
 #include "Parameters.h"
 #include "Layer.h"
 
-// loss func, initialization func, layers<numNodes, actFunc>
 class Network : public Serializable
 {
 public:
@@ -31,7 +30,7 @@ private:
 	void StoreDelta(const std::vector<Parameters>& other);
 	InitialLayer& GetInitialLayer();
 private:
-	std::vector<std::unique_ptr<LayerBase>> m_layers;
+	std::vector<std::unique_ptr<Layer>> m_layers;
 	std::vector<Parameters> m_storedDelta;
 
 	size_t m_numStored = 0;

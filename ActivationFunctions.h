@@ -1,100 +1,111 @@
 #pragma once
 
-class ActivationFunction
+namespace ActFunc
 {
-public:
-	virtual std::string GetName() const = 0;
-	virtual float Execute(float x) const = 0;
-	virtual float ExecuteDerivative(float x) const = 0;
-};
-
-class Sigmoid : public ActivationFunction
-{
-	static constexpr const char* Name{"Sigmoid"};
-public:
-	virtual std::string GetName() const
+	class Base
 	{
-		return Name;
-	}
+	public:
+		virtual std::string GetName() const = 0;
+		virtual float Execute(float x) const = 0;
+		virtual float ExecuteDerivative(float x) const = 0;
+	};
 
-	virtual float Execute(float x) const override
+	class None : public Base
 	{
-		return 1.0f / (1.0f + expf(-x));
-	}
+	public:
 
-	virtual float ExecuteDerivative(float x) const override
-	{
-		float s = Execute(x);
-		return s * (1.0f - s);
-	}
-};
+		static constexpr const char* k_name{ "None" };
 
-class None : public ActivationFunction
-{
-	static constexpr const char* Name{ "None" };
-public:
-	virtual std::string GetName() const
-	{
-		return Name;
-	}
+		virtual std::string GetName() const
+		{
+			return k_name;
+		}
 
-	virtual float Execute(float x) const override
-	{
-		return x;
-	}
-
-	virtual float ExecuteDerivative(float x) const override
-	{
-		return 1;
-	}
-};
-
-class ReLU : public ActivationFunction
-{
-	static constexpr const char* Name{ "ReLU" };
-public:
-	virtual std::string GetName() const
-	{
-		return Name;
-	}
-
-	virtual float Execute(float x) const override
-	{
-		return std::max(0.0f, x);
-	}
-
-	virtual float ExecuteDerivative(float x) const override
-	{
-		return x > 0;
-	}
-};
-
-class LeakyReLU : public ActivationFunction
-{
-	static constexpr float k_leakySlope = 0.1f;
-	static constexpr const char* Name{ "LeakyReLU" };
-public:
-	virtual std::string GetName() const
-	{
-		return Name;
-	}
-
-	virtual float Execute(float x) const override
-	{
-		if (x >= 0.0f)
+		virtual float Execute(float x) const override
 		{
 			return x;
 		}
-		else
+
+		virtual float ExecuteDerivative(float x) const override
 		{
-			return x * k_leakySlope;
+			return 1;
+		}
+	};
+
+	class Sigmoid : public Base
+	{
+	public:
+
+		static constexpr const char* k_name{ "Sigmoid" };
+
+		virtual std::string GetName() const
+		{
+			return k_name;
 		}
 
-		return std::max(0.0f, x);
-	}
+		virtual float Execute(float x) const override
+		{
+			return 1.0f / (1.0f + expf(-x));
+		}
 
-	virtual float ExecuteDerivative(float x) const override
+		virtual float ExecuteDerivative(float x) const override
+		{
+			float s = Execute(x);
+			return s * (1.0f - s);
+		}
+	};
+
+	class ReLU : public Base
 	{
-		return x >= 0 ? 1 : k_leakySlope;
-	}
-};
+	public:
+
+		static constexpr const char* k_name{ "ReLU" };
+
+		virtual std::string GetName() const
+		{
+			return k_name;
+		}
+
+		virtual float Execute(float x) const override
+		{
+			return std::max(0.0f, x);
+		}
+
+		virtual float ExecuteDerivative(float x) const override
+		{
+			return x > 0;
+		}
+	};
+
+	class LeakyReLU : public Base
+	{
+		static constexpr float k_leakySlope = 0.1f;
+	public:
+
+		static constexpr const char* k_name{ "LeakyReLU" };
+
+		virtual std::string GetName() const
+		{
+			return k_name;
+		}
+
+		virtual float Execute(float x) const override
+		{
+			if (x >= 0.0f)
+			{
+				return x;
+			}
+			else
+			{
+				return x * k_leakySlope;
+			}
+
+			return std::max(0.0f, x);
+		}
+
+		virtual float ExecuteDerivative(float x) const override
+		{
+			return x >= 0 ? 1 : k_leakySlope;
+		}
+	};
+}

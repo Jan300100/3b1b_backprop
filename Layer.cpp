@@ -1,7 +1,6 @@
 #include "Layer.h"
-#include "ActivationFunctions.h"
 
-LayerBase::LayerBase(size_t numNeurons, ActivationFunction* func, LayerBase* previousLayer)
+Layer::Layer(size_t numNeurons, ActFunc::Base* func, Layer* previousLayer)
 	: m_numNeurons{numNeurons}
 	, m_activationFunction{func}
 	, m_previousLayer{previousLayer}
@@ -19,12 +18,13 @@ LayerBase::LayerBase(size_t numNeurons, ActivationFunction* func, LayerBase* pre
 	m_params = Parameters{ numNeurons, numWeightsToEachNeuron * numNeurons, false };
 }
 
-void LayerBase::SetParams(const Parameters& params)
+void Layer::SetParams(const Parameters& params)
 {
+	// check num neurons and weights
 	m_params = params;
 }
 
-void LayerBase::Propagate()
+void Layer::Propagate()
 {
 	// We need previousLayer to work
 	if (m_previousLayer != nullptr)
@@ -62,7 +62,7 @@ void LayerBase::Propagate()
 }
 
 InitialLayer::InitialLayer(size_t numNeurons)
-	:LayerBase{numNeurons, nullptr}
+	:Layer{numNeurons, nullptr}
 {
 }
 
